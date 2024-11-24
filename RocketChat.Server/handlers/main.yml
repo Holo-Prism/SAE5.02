@@ -7,7 +7,7 @@
     service: name=mongod state=restarted
 
   - name: Upgrade Rocket.Chat
-    include: upgrade.yml
+    import_tasks: upgrade.yml
     when: rocket_chat_deploy_state.stat.exists
     tags:
       - upgrade

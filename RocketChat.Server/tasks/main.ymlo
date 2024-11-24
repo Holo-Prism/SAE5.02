@@ -11,11 +11,11 @@
     when: ansible_os_family == "RedHat"
     tags: repo
 
-#  - name: Ensure APT cache has been updated recently
-#    apt:
-#      update_cache: yes
+  - name: Ensure APT cache has been updated recently
+    apt:
+      update_cache: yes
       #cache_valid_time: 3600
-#    when: ansible_pkg_mgr == "apt"
+    when: ansible_pkg_mgr == "apt"
 
   - include_tasks: mongodb.yml
     when: rocket_chat_include_mongodb|bool
@@ -122,33 +122,11 @@
     become_user: "root"
     tags: build
 
-  - name: Remove existing Node.js version
-    command: apt-get remove -y nodejs
-    become: true
-
-  - name: Télécharger le fichier de Node.js 14.21.3
-    get_url:
-      url: https://nodejs.org/dist/v14.21.3/node-v14.21.3-linux-x64.tar.xz
-      dest: /tmp/node-v14.21.3-linux-x64.tar.xz
-
-  - name: Extraire Node.js 14.21.3 dans /usr/local
-    command:
-      cmd: "tar -xJf /tmp/node-v14.21.3-linux-x64.tar.xz -C /usr/local --strip-components=1"
-      creates: /usr/local/bin/node
-    args:
-      removes: /usr/local/bin/node
-
-  - name: Install Node.js 14.x
-    apt:
-      name: nodejs
-      state: present
-    become: true
-
-
   - name: Install Rocket.Chat via NPM
-    command: yarn install
-    args:
-      chdir: "/var/lib/rocket.chat/Rocket.Chat-6.3.13/"
+    npm:
+      state: present
+      path: "/var/lib/rocket.chat/Rocket.Chat-6.3.13/package.json"
+      executable: "package.json"
     become: true
     become_user: "root"
     tags: build

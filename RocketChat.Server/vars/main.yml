@@ -1,0 +1,7 @@
+---
+vars:
+  rocket_chat_mongodb_apt_repo: "deb http://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse"
+  rocket_chat_mongodb_keyserver: "hkp://keyserver.ubuntu.com:80"
+  rocket_chat_mongodb_gpg_key: "9C9D9D76A6B3FB9C"
+  rocket_chat_mongodb_packages: "mongodb-org"
+  rocket_chat_mongodb_config_template: "mongod.conf.j2"

@@ -7,6 +7,12 @@
       - "{{ ansible_distribution }}.yml"
       - "{{ ansible_os_family }}.yml"
 
+  - name: Add MongoDB GPG key
+    apt_key:
+        url: "https://www.mongodb.org/static/pgp/server-4.4.asc"  # URL de la clé publique MongoDB
+        state: present
+    tags: repo
+
   - name: Ensure the MongoDB repository key has been imported
     apt_key:
       keyserver: "{{ rocket_chat_mongodb_keyserver }}"
@@ -15,6 +21,8 @@
     tags: repo
 
   - name: Ensure the MongoDB repository is present
+    vars:
+      rocket_chat_mongodb_apt_repo: "deb http://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse"  # Exemple pour Ubuntu 20.04 (Focal
     apt_repository:
       repo: "{{ rocket_chat_mongodb_apt_repo }}"
       state: present
