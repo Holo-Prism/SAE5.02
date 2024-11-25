@@ -163,14 +163,14 @@
     when: (ansible_distribution == "Ubuntu")
           and (ansible_distribution_major_version == "14")
 
-  - name: Ensure the Rocket.Chat application data permissions are correct
-    file:
-      path: "{{ rocket_chat_application_path }}"
-      state: directory
-      owner: "{{ rocket_chat_service_user }}"
-      group: "{{ rocket_chat_service_user }}"
-      recurse: true
-    tags: build
+  #- name: Ensure the Rocket.Chat application data permissions are correct
+ #   file:
+ #     path: "{{ rocket_chat_application_path }}"
+  #    state: directory
+  #    owner: "{{ rocket_chat_service_user }}"
+  #    group: "{{ rocket_chat_service_user }}"
+  #    recurse: true
+   # tags: build
 
   - include_vars: "{{ item }}"
     with_first_found:
