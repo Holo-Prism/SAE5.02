@@ -182,8 +182,8 @@
 
   - name: Deploy the Rocket.Chat service file
     template:
-      src: "{{ rocket_chat_service_template.src }}"
-      dest: "{{ rocket_chat_service_template.dest }}"
+      src: "roles/RocketChat.Server/templates/rocketchat.service.j2"
+      dest: "/etc/systemd/system/rocketchat.service"
     notify:
       - Update the Rocket.Chat service configuration
       - Restart the Rocket.Chat service
