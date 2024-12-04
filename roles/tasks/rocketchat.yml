@@ -1,0 +1,105 @@
+---
+- name: Deployer Rocket.Chat
+  hosts: rocketchat_server
+  become_user: root
+  tasks:
+    - name: Mettre a jour le systeme
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Installer les d  pendances
+      apt:
+        name:
+          - curl
+          - build-essential
+          - g++
+          - make
+        state: present
+
+    - name: Installer les paquets necessaires pour Rocket.Chat
+      apt:
+        name:
+          - build-essential
+          - libbrotli-dev
+          - libnghttp2-dev
+          - libicu-dev
+          - libc-ares-dev
+          - python3-dev
+        state: present
+
+    - name: Installer la bonne version de node 20.18.0 ou plus
+      shell: |
+        curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+
+    - name: V  rifier la version de Node.js
+      shell: node -v
+      register: node_version
+#      become: yes
+
+    - name: Afficher la version de Node.js
+      debug:
+        msg: "La version de Node.js est {{ node_version.stdout }}"
+
+    - name: Creer un utilisateur pour Rocket.Chat
+      user:
+        name: rocketchat
+        shell: /bin/bash
+        create_home: yes
+
+    - name: Creer le repertoire de Rocket.Chat
+      file:
+        path: /opt/Rocket.Chat
+        state: directory
+        owner: rocketchat
+        group: rocketchat
+        mode: '0755'
+
+    - name: Telecharger Rocket.Chat
+#      become_user: rocketchat
+      shell: |
+        curl -L https://releases.rocket.chat/7.1.0/download -o /tmp/rocket.chat.tgz
+        tar -xzf /tmp/rocket.chat.tgz -C /tmp
+        cd /tmp/bundle/programs/server && npm install --production
+        mv /tmp/bundle /opt/Rocket.Chat
+      args:
+        executable: /bin/bash
+
+    - name: sauvegarde la route avec la version de node
+      shell: |
+        NODE_PATH=$(which node)
+        cat << EOF |sudo tee -a /lib/systemd/system/rocketchat.service
+        [Unit]
+        Description=The Rocket.Chat server
+        After=network.target remote-fs.target nss-lookup.target nginx.service mongod.service
+        [Service]
+        ExecStart=/root/.nvm/versions/node/v20.18.0/bin/node /opt/Rocket.Chat/bundle/main.js
+        StandardOutput=journal
+        StandardError=journal
+        SyslogIdentifier=rocketchat
+        User=rocketchat
+        [Install]
+        WantedBy=multi-user.target
+        EOF
+      args:
+        executable: /bin/bash
+
+    - name: Configurer les variables d'environnement
+      shell: |
+        export ROOT_URL=http://192.168.119.23:3000
+        export MONGO_URL=mongodb://192.168.119.24:27017/rocketchat
+        export PORT=3000
+        export Environment=MONGO_OPLOG_URL=mongodb://192.168.119.24:27017/local
+      args:
+        executable: /bin/bash
+
+    - name: Lancer Rocket.Chat avec PM2
+      shell: |
+        npm install -g pm2
+        pm2 start /opt/Rocket.Chat/bundle/main.js --name "rocketchat" --env production
+        pm2 startup
+        pm2 save
+        pm2 list
+      args:
+        executable: /bin/bash
