@@ -97,6 +97,10 @@
     - name: Lancer Rocket.Chat avec PM2
       shell: |
         npm install -g pm2
+        ROOT_URL=http://192.168.119.23:3000 \
+        MONGO_URL=mongodb://192.168.119.24:27017/rocketchat \
+        PORT=3000 \
+        MONGO_OPLOG_URL=mongodb://192.168.119.24:27017/local \
         pm2 start /opt/Rocket.Chat/bundle/main.js --name "rocketchat" --env production
         pm2 startup
         pm2 save
