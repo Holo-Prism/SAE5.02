@@ -1,3 +1,5 @@
+Projet SALA Mattéo BUT 3 :
+
 Mettre en œuvre un système de chat instantané (Rocket.Chat) avec une authentification sécurisée, déployé sur des serveurs Linux et/ou Windows, tout en utilisant Ansible pour automatiser l’installation et la configuration, afin d’assurer la sécurité des utilisateurs et des données. La ou les machine Windows disposeront de WinRM afin de pouvoir utiliser ansible sur ses machines.
  
 
