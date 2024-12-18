@@ -1,0 +1,11 @@
+---
+- name: Cr  er une base de donn  es MongoDB et une collection
+  hosts: MongoDB
+  tasks:
+    - name: Utiliser la base mydatabase
+      ansible.builtin.command: >
+        mongosh --eval 'use rocketchat2'
+
+    - name: test
+      ansible.builtin.command: >
+        mongosh --eval 'db.lol.insertOne({name: "Ada Lovelace", age: 205})'

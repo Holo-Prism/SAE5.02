@@ -17,6 +17,7 @@ docker run -ti --name RocketChat --hostname RocketChat \
 docker pull mongodb/mongodb-community-server:latest
 docker run --name MongoDB --hostname MongoDB \
   -p 27017:27017 --network sae502 --ip 192.168.119.24 \
-  -d mongodb/mongodb-community-server:latest
+  -d mongodb/mongodb-community-server:latest \
+  --replSet rs0
 
 echo "Déploiement terminé."

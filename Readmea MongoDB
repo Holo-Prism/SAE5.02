@@ -1,0 +1,4 @@
+2 commande à taper dans le shell mongodb pour la configuré : 
+
+rs.initiate() --> active la  réplication, cela permet les échange en temps réel
+use rocketchat ---> crée la base (ne pas fermer le shell temps que le serveur rocket n'est pas configué)

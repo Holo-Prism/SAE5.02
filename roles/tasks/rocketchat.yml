@@ -8,7 +8,7 @@
         update_cache: yes
         upgrade: dist
 
-    - name: Installer les d  pendances
+    - name: Installer les dependances
       apt:
         name:
           - curl
