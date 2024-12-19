@@ -38,7 +38,7 @@
       debug:
         var: service_result
 
-- name: Stop Bind9 service if running
+    - name: Stop Bind9 service if running
       service:
         name: bind9
         state: stopped
@@ -104,6 +104,22 @@
         state: present
         line: "nameserver 127.0.0.1"
 
+    - name: Test if Samba AD service is running
+      command: systemctl status samba-ad-dc
+      register: samba_status
+      ignore_errors: true
+
+    - debug:
+        var: samba_status.stdout
+
+    - name: Test if Bind9 service is running
+      command: systemctl status bind9
+      register: bind9_status
+      ignore_errors: true
+
+    - debug:
+        var: bind9_status.stdout
+
     - name: Test Samba DNS resolution
       command: host -t A {{ domain|lower }}
       register: dns_test
@@ -118,5 +134,12 @@
       ignore_errors: true
 
     - debug:
-        var: ldap_test.stdout
+        var: kerberos_output.stdout
 
+    - name: Verify LDAP functionality
+      command: ldapsearch -H ldap://127.0.0.1 -x -b "dc=example,dc=com"
+      register: ldap_test
+      ignore_errors: true
+
+    - debug:
+        var: ldap_test.stdout
