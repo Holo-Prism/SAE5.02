@@ -1,6 +1,6 @@
 ---
 - name: Configure Samba 4 as Active Directory Domain Controller
-  hosts: samba_server
+  hosts: 192.168.119.21
   become: true
   vars:
     realm: "EXAMPLE.COM"
@@ -31,11 +31,18 @@
         - nmbd
         - winbind
         - samba-ad-dc
+      register: service_result
+      ignore_errors: yes
 
-    - name: Stop Bind9 service if running
+    - name: Show result of stopping services
+      debug:
+        var: service_result
+
+- name: Stop Bind9 service if running
       service:
         name: bind9
         state: stopped
+      when: ansible_facts['ansible_systemd'] is not defined
 
     - name: Backup existing Samba configuration if it exists
       command:
@@ -54,20 +61,30 @@
       args:
         creates: /var/lib/samba/private/sam.ldb
 
-    - name: Configure Bind9 for Samba (if using BIND9_DLZ)
+    - name: Ensure forwarders and allow-query are inside the options block
       lineinfile:
         path: /etc/bind/named.conf.options
-        state: present
+        regexp: '^options\s*\{'
         line: |
-          forwarders {
-              8.8.8.8; 8.8.4.4;
-          };
-          allow-query { any; };
+          options {
+
+                  forwarders {
+                      8.8.8.8;
+                      8.8.4.4;
+                  };
+
+                  allow-query { any; };
+
+        state: present
+
+        insertafter: '^options\s*\{'
+        create: yes
 
     - name: Copy Kerberos configuration
       copy:
         src: /var/lib/samba/private/krb5.conf
         dest: /etc/krb5.conf
+        remote_src: yes
 
     - name: Enable and start Samba AD service
       service:
@@ -101,12 +118,5 @@
       ignore_errors: true
 
     - debug:
-        var: kerberos_output.stdout
-
-    - name: Verify LDAP functionality
-      command: ldapsearch -H ldap://127.0.0.1 -x -b "dc={{ domain|lower }},dc=com"
-      register: ldap_test
-      ignore_errors: true
-
-    - debug:
         var: ldap_test.stdout
+
