@@ -1,0 +1,112 @@
+---
+- name: Configure Samba 4 as Active Directory Domain Controller
+  hosts: samba_server
+  become: true
+  vars:
+    realm: "EXAMPLE.COM"
+    domain: "EXAMPLE"
+    dns_backend: "SAMBA_INTERNAL"
+    admin_password: "Admin@12345"  # Change this to a strong password
+
+  tasks:
+    - name: Install required packages including Bind9 for DNS
+      apt:
+        name:
+          - samba
+          - krb5-user
+          - winbind
+          - smbclient
+          - dnsutils
+          - bind9
+          - bind9utils
+          - bind9-doc
+        state: present
+
+    - name: Stop Samba services if running
+      service:
+        name: "{{ item }}"
+        state: stopped
+      loop:
+        - smbd
+        - nmbd
+        - winbind
+        - samba-ad-dc
+
+    - name: Stop Bind9 service if running
+      service:
+        name: bind9
+        state: stopped
+
+    - name: Backup existing Samba configuration if it exists
+      command:
+        cmd: mv /etc/samba/smb.conf /etc/samba/smb.conf.bak
+      ignore_errors: true
+
+    - name: Provision Samba domain with DNS backend
+      command: >
+        samba-tool domain provision
+        --use-rfc2307
+        --realm={{ realm }}
+        --domain={{ domain }}
+        --server-role=dc
+        --dns-backend={{ dns_backend }}
+        --adminpass={{ admin_password }}
+      args:
+        creates: /var/lib/samba/private/sam.ldb
+
+    - name: Configure Bind9 for Samba (if using BIND9_DLZ)
+      lineinfile:
+        path: /etc/bind/named.conf.options
+        state: present
+        line: |
+          forwarders {
+              8.8.8.8; 8.8.4.4;
+          };
+          allow-query { any; };
+
+    - name: Copy Kerberos configuration
+      copy:
+        src: /var/lib/samba/private/krb5.conf
+        dest: /etc/krb5.conf
+
+    - name: Enable and start Samba AD service
+      service:
+        name: samba-ad-dc
+        state: started
+        enabled: true
+
+    - name: Enable and start Bind9 service
+      service:
+        name: bind9
+        state: started
+        enabled: true
+
+    - name: Configure DNS resolution for the domain
+      lineinfile:
+        path: /etc/resolv.conf
+        state: present
+        line: "nameserver 127.0.0.1"
+
+    - name: Test Samba DNS resolution
+      command: host -t A {{ domain|lower }}
+      register: dns_test
+      ignore_errors: true
+
+    - debug:
+        var: dns_test.stdout
+
+    - name: Verify Kerberos setup
+      command: kinit administrator
+      register: kerberos_output
+      ignore_errors: true
+
+    - debug:
+        var: kerberos_output.stdout
+
+    - name: Verify LDAP functionality
+      command: ldapsearch -H ldap://127.0.0.1 -x -b "dc={{ domain|lower }},dc=com"
+      register: ldap_test
+      ignore_errors: true
+
+    - debug:
+        var: ldap_test.stdout
