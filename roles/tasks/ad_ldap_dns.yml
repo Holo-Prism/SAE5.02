@@ -3,8 +3,8 @@
   hosts: 192.168.119.21
   become: true
   vars:
-    realm: "EXAMPLE.COM"
-    domain: "EXAMPLE"
+    realm: "SAE502.COM"
+    domain: "SAE502"
     dns_backend: "SAMBA_INTERNAL"
     admin_password: "Admin@12345"  # Change this to a strong password
 
@@ -80,6 +80,16 @@
         insertafter: '^options\s*\{'
         create: yes
 
+    - name: Configure DNS zones for the domain
+      lineinfile:
+        path: /etc/bind/named.conf.local
+        line: |
+          zone "{{ domain|lower }}.com" {
+              type master;
+              file "/var/lib/samba/bind-dns/named.conf";
+          };
+        state: present
+
     - name: Copy Kerberos configuration
       copy:
         src: /var/lib/samba/private/krb5.conf
@@ -112,6 +122,14 @@
     - debug:
         var: samba_status.stdout
 
+    - name: Check Samba AD service logs
+      command: journalctl -u samba-ad-dc
+      register: samba_logs
+      ignore_errors: true
+
+    - debug:
+        var: samba_logs.stdout
+
     - name: Test if Bind9 service is running
       command: systemctl status bind9
       register: bind9_status
@@ -137,7 +155,7 @@
         var: kerberos_output.stdout
 
     - name: Verify LDAP functionality
-      command: ldapsearch -H ldap://127.0.0.1 -x -b "dc=example,dc=com"
+      command: ldapsearch -H ldap://127.0.0.1 -x -b "dc=sae502,dc=com"
       register: ldap_test
       ignore_errors: true
 
