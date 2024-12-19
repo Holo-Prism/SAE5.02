@@ -21,16 +21,6 @@
 
     service ssh start
 
-**Sur la Vm Project-manager :**
-
-    Il va falloir générer une clef ssh pour pouvoir utiliser ansible.
-
-    ssh-keygen (on ne met pas de mdp, pour la sécurité il faudrait en mettre une)
-
-    Il va falloir copier la clef sur la machine distante : 
-
-    ssh-copy-id root@<IP RocketChat ou sont nom>
-
 **Sur la Vm MongoDB :**
 
     Il va falloir activer la réplication pour un chat en temps réel :
@@ -42,3 +32,43 @@
     use rocketchat
 
     Attention nne pas fermer rocketchat avant d'avoir lancer le playbook ! Si aucune données n'est rentrer MongoDB ne crée pas les base, lorque le playbook aura installer rocket, il remplira la base de données automatiquement. A la fin de l'installation vous pourrez fermer sans soucis.
+
+**Sur la Vm Project-manager :**
+
+    Il va falloir générer une clef ssh pour pouvoir utiliser ansible.
+
+    ssh-keygen (on ne met pas de mdp, pour la sécurité il faudrait en mettre une)
+
+    Il va falloir copier la clef sur la machine distante : 
+
+    ssh-copy-id root@<IP RocketChat ou sont nom> (initier une première connexion ssh avec cette clef pouur ne pas avvoir de problèmes après !)
+
+    
+
+    Installation de ansible : 
+        
+        apt install python3-virtualenv sshpass
+                
+        virtualenv ansible --> crée l'environnement ansible
+        
+        source ansible/bin/activate --> pour utiliser l'environnement virtuel ansible
+        
+        pip install ansible passlib --> installe ansible
+    
+
+**Lancer le playbook :**
+
+    Aller dans l'environnement virtuel ansible : source ansible/bin/activate
+
+    Dossier GitHub : git clone https://github.com/Holo-Prism/SAE5.02.git
+
+    lancer le playbook avec : ansible-playbook -i SAE5.02/inventaire.ini SAE5.02/roles/tasks/rocketchat.yml
+
+
+Sa y est il ne vous reste plus qu'a vous connecter à l'interface d'administartion : http://192.18.119.23:3000
+
+    Crée le compte admin et paramétrer l'esapace de travail
+
+Sur un client :
+
+    Installer rocketchat et connecter vous à votre espace de travail.
