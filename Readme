@@ -1,0 +1,43 @@
+**Projet SAE5.02 SALA Mattéo BUT3 RT : Déployer rocket chat avec la base donné MongoDB**
+
+
+**Prérequis avoir Docker !**
+
+**Création des Vm's souus docker :**
+
+    Utilisation du fichier https://vscode.dev/github/Holo-Prism/SAE5.02/blob/main/Dockerauto.sh
+
+    Il va déployer 3 Vm's , le gestionnaire de noeud, MongoDB et RocketChat
+
+**Sur les Vm's Project-manager et RocketChat il faut executer les commandes suivantes afin d'installer ssh :**
+
+    apt update
+    apt innstall openssh-server
+
+    Changer le mot de passe root : passwd root
+
+    modifier le fichier ssh pour autoriser la connexion avec root "PermitRootLogin yes" : nano /etc/ssh/sshd_config
+
+    service ssh start
+
+**Sur la Vm Project-manager :**
+
+    Il va falloir générer une clef ssh pour pouvoir utiliser ansible.
+
+    ssh-keygen (on ne met pas de mdp, pour la sécurité il faudrait en mettre une)
+
+    Il va falloir copier la clef sur la machine distante : 
+
+    ssh-copy-id root@<IP RocketChat ou sont nom>
+
+**Sur la Vm MongoDB :**
+
+    Il va falloir activer la réplication pour un chat en temps réel :
+
+    rs.initiate()
+
+    et il faut crée la base rocketchat :
+
+    use rocketchat
+
+    Attention nne pas fermer rocketchat avant d'avoir lancer le playbook ! Si aucune données n'est rentrer MongoDB ne crée pas les base, lorque le playbook aura installer rocket, il remplira la base de données automatiquement. A la fin de l'installation vous pourrez fermer sans soucis.
