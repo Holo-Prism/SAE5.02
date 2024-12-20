@@ -83,9 +83,9 @@ ________________________________________________________________________________
 Mettre en œuvre un système de chat instantané (Rocket.Chat) avec une authentification sécurisée, déployé sur des serveurs Linux et/ou Windows, tout en utilisant Ansible pour automatiser l’installation et la configuration, afin d’assurer la sécurité des utilisateurs et des données. La ou les machine Windows disposeront de WinRM afin de pouvoir utiliser ansible sur ses machines.
  
 
-    Composante requise
+Composante requise : 
 
-Serveur DNS (Dédié)
+    Serveur DNS (Dédié)
 
         Description : Gère la résolution des noms de domaine, essentiel pour la communication entre les services.
         Système d'exploitation recommandé : Ubuntu Server ou CentOS.
@@ -117,7 +117,7 @@ Serveur DNS (Dédié)
 
 Les composants pourront être installés sur une ou plusieurs machines ou des OS différents en fonction des besoins et des prérequis (exemple : AD sur windows).
  
-Prérequis
+Prérequis :
  
 
     Accès SSH : Accès sécurisé à chaque serveur pour le déploiement.
@@ -129,37 +129,36 @@ Prérequis
 Mise en place des services via les playbooks ansible
  Dans un dossier rôles, une arborescence sera créée. Un dossier par service/fonctionnalité, qui contiendra les fichiers de configurations, des rôle ou variable commune, ... . L'installation des services se fera depuis un fichier yml afin de déployer l'ensemble de la maquette.
  
-3.1 Configuration du Serveur DNS (sur windows)
+**3.1 Configuration du Serveur DNS (sur Windows)**
 
-    Installation de BIND via Ansible :
-        Créer un playbook Ansible dns_setup.yml pour la configuration
-        Créer un fichier dns_installation.yml pour la l’installation
-        Voir d’autre fichier dans l’arborescence si on a des rôles communs
-        Suivre la procédure sur AD ci-dessous si sous windows
-    Post-Installation :
-        Ajouter les enregistrements DNS nécessaires pour les serveurs LDAP, MongoDB et Rocket.Chat dans la configuration de BIND.
-        Tester la résolution DNS à partir d'autres serveurs.
-     
+**Installation de BIND via Ansible :**
+- Créer un playbook Ansible `dns_setup.yml` pour la configuration.
+- Créer un fichier `dns_installation.yml` pour l’installation.
+- Voir d’autres fichiers dans l’arborescence si on a des rôles communs.
+- Suivre la procédure sur AD ci-dessous si sous Windows.
 
-3.2 Mise en Place de l'Active Directory (AD)
+**Post-Installation :**
+- Ajouter les enregistrements DNS nécessaires pour les serveurs LDAP, MongoDB et Rocket.Chat dans la configuration de BIND.
+- Tester la résolution DNS à partir d'autres serveurs.
 
-    Installation de l'Active Directory :
-        L'installation et la configuration d'AD doivent être effectuées manuellement sur le serveur Windows, car Ansible ne peut pas gérer Windows de la même manière que Linux.
-        On peut installer l’AD ou autre service Windows en suivant la procédure suivante :
+**3.2 Mise en Place de l'Active Directory (AD)**
 
--          Configuration de WinRM sur la machine windows :
-§  Activer winRM : winrm quickconfig -q
-§  Autoriser les connexions à distance : Set-Item WSMan:\localhost\Client\TrustedHosts -Value <Adresse_IP_de_votre_machine_Ubuntu>
-§  Configurer le pare-feu: Autoriser le trafic WinRM à travers le pare-feu Windows.
-Création d’un inventaire ansible avec les infos de la machine :
- 
-[windows_servers]
-windows_server ansible_host=192.168.1.100 ansible_user=admin
-§  Puis écriture des playbooks
+**Installation de l'Active Directory :**
+    - L'installation et la configuration d'AD doivent être effectuées manuellement sur le serveur Windows, car Ansible ne peut pas gérer Windows de la même manière que Linux.
+    - On peut installer l’AD ou autre service Windows en suivant la procédure suivante :
 
-        Création de comptes
+    **Configuration de WinRM sur la machine Windows :**
+    - Activer winRM : `winrm quickconfig -q`
+    - Autoriser les connexions à distance : `Set-Item WSMan:\localhost\Client\TrustedHosts -Value <Adresse_IP_de_votre_machine_Ubuntu>`
+    - Configurer le pare-feu : Autoriser le trafic WinRM à travers le pare-feu Windows.
 
-3.3 Installation et Configuration du Serveur LDAP
+    **Création d’un inventaire Ansible avec les infos de la machine :**
+    ```ini
+    [windows_servers]
+    windows_server ansible_host=192.168.1.100 ansible_user=admin
+```
+
+**3.3 Installation et Configuration du Serveur LDAP**
 
     Installation d’OpenLDAP via Ansible :
         Suivre la procédure donnée pour l’AD (machine sur windows)
@@ -169,7 +168,7 @@ windows_server ansible_host=192.168.1.100 ansible_user=admin
         Tester la connexion LDAP avec ldapsearch pour vérifier l'accès.
      
 
-3.4 Installation de MongoDB via Ansible
+**3.4 Installation de MongoDB via Ansible**
 
     Installation de MongoDB :
         Créer un playbook Ansible mongodb_setup.yml et celui d’installation (voir celui des rôles ou variable commune)
@@ -243,17 +242,15 @@ Tests
     Tests de charge : Effectuer des tests de performance sous différentes charges d'utilisateurs pour évaluer la réactivité du système.
      
 
-Documentations
- 
+Documentations : 
 
-    Procédures : Documenter toutes les étapes réalisées dans un format clair et structuré.
-    Contenu à inclure :
-        Commandes utilisées avec sorties attendues.
-        Configurations spécifiques à DNS, AD, LDAP, MongoDB, Node.js et Rocket.Chat.
-        Captures d'écran des étapes clés pour validation.
-    Guide utilisateur : Fournir des instructions claires pour la connexion et l'utilisation de Rocket.Chat.
-    Maintenance (si il reste du temps)
-
-- Prévoir un plan de maintenance régulier pour les mises à jour de sécurité et de fonctionnalité.
-- Mettre en place un système de sauvegarde régulier pour les données de MongoDB et les configurations de Rocket.Chat.
-- Assurer une surveillance proactive du système (utilisation de monitoring comme Prometheus/Grafana).
+**Procédures :** Documenter toutes les étapes réalisées dans un format clair et structuré.
+- **Contenu à inclure :**
+  - Commandes utilisées avec sorties attendues.
+  - Configurations spécifiques à DNS, AD, LDAP, MongoDB, Node.js et Rocket.Chat.
+  - Captures d'écran des étapes clés pour validation.
+- **Guide utilisateur :** Fournir des instructions claires pour la connexion et l'utilisation de Rocket.Chat.
+- **Maintenance (si il reste du temps)**
+  - Prévoir un plan de maintenance régulier pour les mises à jour de sécurité et de fonctionnalité.
+  - Mettre en place un système de sauvegarde régulier pour les données de MongoDB et les configurations de Rocket.Chat.
+  - Assurer une surveillance proactive du système (utilisation de monitoring comme Prometheus/Grafana).
