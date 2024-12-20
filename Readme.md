@@ -129,7 +129,7 @@ Prérequis :
 Mise en place des services via les playbooks ansible
 Dans un dossier rôles, une arborescence sera créée. Un dossier par service/fonctionnalité, qui contiendra les fichiers de configurations, des rôle ou variable commune, ... . L'installation des services se fera depuis un fichier yml afin de déployer l'ensemble de la maquette.
  
-**3.1 Configuration du Serveur DNS (sur Windows)**
+### **3.1 Configuration du Serveur DNS (sur Windows)**
 
 **Installation de BIND via Ansible :**
 - Créer un playbook Ansible `dns_setup.yml` pour la configuration.
@@ -141,7 +141,7 @@ Dans un dossier rôles, une arborescence sera créée. Un dossier par service/fo
 - Ajouter les enregistrements DNS nécessaires pour les serveurs LDAP, MongoDB et Rocket.Chat dans la configuration de BIND.
 - Tester la résolution DNS à partir d'autres serveurs.
 
-**3.2 Mise en Place de l'Active Directory (AD)**
+### **3.2 Mise en Place de l'Active Directory (AD)**
 
 **Installation de l'Active Directory :**
 
@@ -159,7 +159,7 @@ Dans un dossier rôles, une arborescence sera créée. Un dossier par service/fo
     windows_server ansible_host=192.168.1.100 ansible_user=admin
     ```
 
-**3.3 Installation et Configuration du Serveur LDAP**
+### **3.3 Installation et Configuration du Serveur LDAP**
 
     Installation d’OpenLDAP via Ansible :
 
@@ -172,7 +172,7 @@ Dans un dossier rôles, une arborescence sera créée. Un dossier par service/fo
         Tester la connexion LDAP avec ldapsearch pour vérifier l'accès.
      
 
-**3.4 Installation de MongoDB via Ansible**
+### **3.4 Installation de MongoDB via Ansible**
 
     Installation de MongoDB :
 
@@ -187,7 +187,7 @@ Dans un dossier rôles, une arborescence sera créée. Un dossier par service/fo
         Tester la connexion à MongoDB avec mongo pour s'assurer que le service fonctionne.
 
  
-3.5 Installation de Node.js via Ansible
+### **3.5 Installation de Node.js via Ansible**
 
     Installation de Node.js :
 
@@ -201,7 +201,7 @@ Dans un dossier rôles, une arborescence sera créée. Un dossier par service/fo
         Mettre à jour npm à la dernière version.
         Vérifier que npm fonctionne correctement en installant un paquet de test.
 
-3.6 Installation de Rocket.Chat via Ansible
+### **3.6 Installation de Rocket.Chat via Ansible**
 
     Installation de Rocket.Chat :
 
@@ -223,20 +223,20 @@ Dans un dossier rôles, une arborescence sera créée. Un dossier par service/fo
         Créer un service systemd pour Rocket.Chat afin de l'exécuter en tant que service.
          
 
-3.7 Intégration de l'Authentification LDAP
+### **3.7 Intégration de l'Authentification LDAP**
 
     Configuration de Rocket.Chat pour utiliser LDAP :
 
         Ajouter la configuration LDAP dans le fichier .env de Rocket.Chat, en utilisant un modèle Jinja2 pour personnaliser la configuration.
 
  
-3.8 Tests de l'Intégration LDAP
+### **3.8 Tests de l'Intégration LDAP**
 
     Vérifier la connexion et l'authentification des utilisateurs via LDAP en essayant de se connecter avec des comptes existants.
     Tester le fonctionnement des groupes et des permissions.
 
  
-Sécurité
+# **Sécurité**
  
 
     HTTPS : Configurer un certificat SSL (Let's Encrypt recommandé pour la production).
@@ -249,7 +249,7 @@ Sécurité
     Logs : Mettre en place un système de surveillance des logs pour détecter les activités suspectes.
      
 
-Tests
+# **Tests**
  
 
     Validation de l'interface : Accéder à Rocket.Chat via l'URL du serveur et vérifier le bon affichage.
@@ -267,16 +267,16 @@ Tests
     Tests de charge : Effectuer des tests de performance sous différentes charges d'utilisateurs pour évaluer la réactivité du système.
      
 
-Documentations : 
+# **Documentations :** 
 
-**Procédures :** Documenter toutes les étapes réalisées dans un format clair et structuré.
+    **Procédures :** Documenter toutes les étapes réalisées dans un format clair et structuré.
 
-- **Contenu à inclure :**
-  - Commandes utilisées avec sorties attendues.
-  - Configurations spécifiques à DNS, AD, LDAP, MongoDB, Node.js et Rocket.Chat.
-  - Captures d'écran des étapes clés pour validation.
-  - **Guide utilisateur :** Fournir des instructions claires pour la connexion et l'utilisation de Rocket.Chat.
-  - **Maintenance (si il reste du temps)**
-  - Prévoir un plan de maintenance régulier pour les mises à jour de sécurité et de fonctionnalité.
-  - Mettre en place un système de sauvegarde régulier pour les données de MongoDB et les configurations de Rocket.Chat.
-  - Assurer une surveillance proactive du système (utilisation de monitoring comme Prometheus/Grafana).
+    - **Contenu à inclure :**
+    - Commandes utilisées avec sorties attendues.
+    - Configurations spécifiques à DNS, AD, LDAP, MongoDB, Node.js et Rocket.Chat.
+    - Captures d'écran des étapes clés pour validation.
+    - **Guide utilisateur :** Fournir des instructions claires pour la connexion et l'utilisation de Rocket.Chat.
+    - **Maintenance (si il reste du temps)**
+    - Prévoir un plan de maintenance régulier pour les mises à jour de sécurité et de fonctionnalité.
+    - Mettre en place un système de sauvegarde régulier pour les données de MongoDB et les configurations de Rocket.Chat.
+    - Assurer une surveillance proactive du système (utilisation de monitoring comme Prometheus/Grafana).
